@@ -3,7 +3,9 @@ package io.kraftsman.linebotsample.controllers
 import com.linecorp.bot.client.LineMessagingClient
 import com.linecorp.bot.model.ReplyMessage
 import com.linecorp.bot.model.event.MessageEvent
+import com.linecorp.bot.model.event.message.StickerMessageContent
 import com.linecorp.bot.model.event.message.TextMessageContent
+import com.linecorp.bot.model.message.StickerMessage
 import com.linecorp.bot.model.message.TextMessage
 import com.linecorp.bot.spring.boot.annotation.EventMapping
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler
@@ -29,5 +31,16 @@ class LineBotController(
                 log.info("Sent messages: {}", apiResponse)
             }
         }
+    }
+
+    @EventMapping
+    fun handleStickerMessageEvent(event: MessageEvent<StickerMessageContent>) {
+        val apiResponse = lineMessagingClient.replyMessage(
+            ReplyMessage(
+                event.replyToken,
+                listOf(StickerMessage(event.message.packageId, event.message.stickerId))
+            )
+        ).get()
+        log.info("Sent messages: {}", apiResponse)
     }
 }
